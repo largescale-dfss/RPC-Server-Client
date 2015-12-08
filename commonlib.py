@@ -5,6 +5,7 @@ import random
 MB = 1<<20
 TIMEOUT = 10 
 DEBUG = True
+CONFIG = "config.txt" #config file
 
 
 def splitFile(fd,block_size):
@@ -41,9 +42,19 @@ def loadBalancer(config_file):
                          127.0.0.1:50053
     """ 
     ip_addresses = []
+    best_ip = ""
     with open(config_file, "r") as config_txt:
         for ip_addr in config_txt:
             ip_addresses.append(ip_addr)
+    
 
     
+    # coin flip, to select a random index to choose from
+    r = random.randint(0,len(ip_addresses)-1)
+    
+    #best_ip is just a random ip from config_file
+    best_ip = ip_addresses[r]
+    if DEBUG:
+        print("List of addresses"+str(ip_addresses))
+        print("Best IP: " + str(best_ip))
     return best_ip

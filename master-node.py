@@ -1,7 +1,7 @@
 ##################
 # Master rpc node 
 #################
-
+import data_pb2
 import time
 import commonlib
 import master_pb2
@@ -24,14 +24,34 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
         filename =  request.file_name
         block_size = request.block_size 
        
+        #picks a random ip addr from config file, we need these fields
+        #so we can: 
+        #1. ping data node to see if it is alive
+        #2. if data node is avaiable, read from this node.   
+        addr = commonlib.loadBalancer(commonlib.CONFIG).split(":")
+        ip = addr[0] #set ip addr as string
+        port = int(addr[1]) #set port number as int
+        
+       channel = implementations.insecure_channel(ip,port)
+       stub = master_pb2.beta_create_DataNode_stub(channel) 
+       
+       #attempt to ping server
+       #NOTE: Add loop so we can try other servers in config file until
+       #a response is found
+       try:
+            response = stub.isAlive(data_pb2.StoreRequest(ping=True),commonlib.TIMEOUT)
+        except:
+            print("The server is possibly not alive... Please try again..")
+            exit()
         #if the block_size flag has not been set, set it to the default
         #1mb
         if block_size == 0:
             block_size = commonlib.MB 
         
         fd = commonlib.splitFile(filename,block_size)
+        if commonlib.DEBUG:        
+            print("reading file ")
         
-        print("reading file ")
         return master_pb2.ReadReply(reply_file=fd[0])
 
 
