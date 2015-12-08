@@ -6,8 +6,8 @@ import time
 import commonlib
 import data_pb2
 from grpc.beta import implementations
-
-class DataNode(master_pb2.BetaDataNodeServicer):
+import sys 
+class DataNode(data_pb2.BetaDataNodeServicer):
     
     def Store(self,request,context):
         """Stores a file on the data node
@@ -39,14 +39,22 @@ class DataNode(master_pb2.BetaDataNodeServicer):
         """This responds with a message indicating the service is alive.
         """    
         msg = "This service is alive"
-        
+        if commonlib.DEBUG:
+            print("You are trying to check to see if i'm alive")
         return data_pb2.AliveReply(health=True,reply_msg=msg) 
 
 def main():
-    """Creates Master Node server and listens onto port 50051"""
-    print("\n\tStarting server on localhost:50051...")
-    server = master_pb2.beta_create_MasterNode_server(MasterNode())
-    server.add_insecure_port('[::]:50051')
+    """Creates Master Node server and listens onto port according to
+    commandline arg"""
+    if len(sys.argv)  == 1:
+        print("Please pass in a port number to run!")
+    #set port 
+    port = sys.argv[1]
+
+    print("\n\tStarting server on localhost:"+port)
+    server = data_pb2.beta_create_DataNode_server(DataNode())
+    ip = "localhost:"+str(port)
+    server.add_insecure_port(ip)
     server.start()
     try:
         while True:

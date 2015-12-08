@@ -32,14 +32,15 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
         ip = addr[0] #set ip addr as string
         port = int(addr[1]) #set port number as int
         
-       channel = implementations.insecure_channel(ip,port)
-       stub = master_pb2.beta_create_DataNode_stub(channel) 
+        channel = implementations.insecure_channel(ip,port)
+        stub = master_pb2.beta_create_DataNode_stub(channel) 
        
-       #attempt to ping server
+        #attempt to ping server
        #NOTE: Add loop so we can try other servers in config file until
        #a response is found
-       try:
+        try:
             response = stub.isAlive(data_pb2.StoreRequest(ping=True),commonlib.TIMEOUT)
+            print("Yay server is alive!")
         except:
             print("The server is possibly not alive... Please try again..")
             exit()

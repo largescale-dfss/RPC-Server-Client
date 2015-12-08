@@ -34,7 +34,7 @@ def main():
             print(response.reply_msg)
         else:
             response=stub.Read(master_pb2.ReadRequest(file_name=sys.argv[2],timestamp=sys.argv[3],block_size=0),commonlib.TIMEOUT)
-            print(response.reply_file)
+            #print(response.reply_file)
     except:
         print("error occured")
 
