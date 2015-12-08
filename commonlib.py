@@ -3,7 +3,7 @@ from grpc.beta import implementations
 import random
 #global definitions used throughout program
 MB = 1<<20
-TIMEOUT = 10 
+TIMEOUT = 10+10 
 DEBUG = True
 CONFIG = "config.txt" #config file
 

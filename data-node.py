@@ -22,6 +22,8 @@ class DataNode(data_pb2.BetaDataNodeServicer):
         """Reads a file from data node
         """
        
+        if commonlib.DEBUG:
+            print("attempting to connect to DataNode Read...")
         filename =  request.file_name
         block_size = request.block_size 
        

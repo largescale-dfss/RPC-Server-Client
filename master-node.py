@@ -20,7 +20,10 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
     def Read(self,request,context):
         """Reads a file from data node
         """
-       
+      
+        if commonlib.DEBUG:
+            print("Attempting to read file") 
+         
         filename =  request.file_name
         block_size = request.block_size 
        
@@ -31,14 +34,18 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
         addr = commonlib.loadBalancer(commonlib.CONFIG).split(":")
         ip = addr[0] #set ip addr as string
         port = int(addr[1]) #set port number as int
-        
-        channel = implementations.insecure_channel(ip,port)
-        stub = master_pb2.beta_create_DataNode_stub(channel) 
+        if commonlib.DEBUG:
+            print(ip)
+            print(port)  
+        channel = implementations.insecure_channel('127.0.0.1',50052)
+        stub = data_pb2.beta_create_DataNode_stub(channel)
+        print("yay we got here") 
        
         #attempt to ping server
        #NOTE: Add loop so we can try other servers in config file until
        #a response is found
         try:
+            print("attempting to connect to isAlive..")
             response = stub.isAlive(data_pb2.StoreRequest(ping=True),commonlib.TIMEOUT)
             print("Yay server is alive!")
         except:
