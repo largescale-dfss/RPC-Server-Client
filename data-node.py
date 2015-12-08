@@ -7,7 +7,8 @@ import commonlib
 import data_pb2
 from grpc.beta import implementations
 
-class MasterNode(master_pb2.BetaMasterNodeServicer):
+class DataNode(master_pb2.BetaDataNodeServicer):
+    
     def Store(self,request,context):
         """Stores a file on the data node
         """
@@ -32,8 +33,14 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
         fd = commonlib.splitFile(filename,block_size)
         
         print("reading file ")
-        return master_pb2.ReadReply(reply_file=fd[0])
-
+        return data_pb2.ReadReply(reply_file=fd[0])
+    
+    def isAlive(self,request,context):
+        """This responds with a message indicating the service is alive.
+        """    
+        msg = "This service is alive"
+        
+        return data_pb2.AliveReply(health=True,reply_msg=msg) 
 
 def main():
     """Creates Master Node server and listens onto port 50051"""
