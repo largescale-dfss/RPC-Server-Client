@@ -46,7 +46,7 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
        #a response is found
         try:
             print("attempting to connect to isAlive..")
-            response = stub.isAlive(data_pb2.StoreRequest(ping=True),commonlib.TIMEOUT)
+            response = stub.isAlive(data_pb2.AliveRequest(ping=True),commonlib.TIMEOUT)
             print("Yay server is alive!")
         except:
             print("The server is possibly not alive... Please try again..")
