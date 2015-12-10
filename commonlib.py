@@ -57,7 +57,6 @@ def loadBalancer(config_file):
     #best_ip is just a random ip from config_file
     best_ip = ip_addresses[r]
     if DEBUG:
-        print("List of addresses"+str(ip_addresses))
         print("Best IP: " + str(best_ip))
     return best_ip
 

@@ -18,10 +18,8 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
         reply_msg = ""
         
         print("In MasterNode.Store") 
-        print(status)
+        
         while status == False:
-            print("Current count="+count)
-
             if count == 5:
                 break
             
@@ -32,17 +30,19 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
         
             #Ping Data-node to see if it is working
             status = commonlib.isAlive(ip,port)
-            
             #inform which servers is down. 
-            server_msg = "Server "+ip+":"+port+" is down"
+            server_msg = "Server %s:%d"%(ip,port)
             print(server_msg)
             
             #internal counter to prevent infinite loop
             count = count + 1
+        
         if count==5 and status==False:
             reply_msg = "Error has occured, file has not been written"
         else:
+            #NOTE: add Store call
             reply_msg = "File has been written"
+        
         
         return master_pb2.StoreReply(reply_msg=request.file_name)
 
