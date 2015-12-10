@@ -12,8 +12,37 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
         """Stores a file on the data node
         """
         
-        reply_msg = "Error has occured, file has not been written"
-     
+        #prevents infinite loop
+        count = 0
+        status = False
+        reply_msg = ""
+        
+        print("In MasterNode.Store") 
+        print(status)
+        while status == False:
+            print("Current count="+count)
+
+            if count == 5:
+                break
+            
+            #retrieve IP address from loadBalancer
+            addr = commonlib.loadBalancer(commonlib.CONFIG).split(":")
+            ip = str(addr[0]) #set ip addr
+            port = int(addr[1]) #set port number as int
+        
+            #Ping Data-node to see if it is working
+            status = commonlib.isAlive(ip,port)
+            
+            #inform which servers is down. 
+            server_msg = "Server "+ip+":"+port+" is down"
+            print(server_msg)
+            
+            #internal counter to prevent infinite loop
+            count = count + 1
+        if count==5 and status==False:
+            reply_msg = "Error has occured, file has not been written"
+        else:
+            reply_msg = "File has been written"
         
         return master_pb2.StoreReply(reply_msg=request.file_name)
 
@@ -39,7 +68,6 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
             print(port)  
         channel = implementations.insecure_channel('127.0.0.1',50052)
         stub = data_pb2.beta_create_DataNode_stub(channel)
-        print("yay we got here") 
        
         #attempt to ping server
        #NOTE: Add loop so we can try other servers in config file until

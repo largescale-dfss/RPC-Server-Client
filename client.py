@@ -28,10 +28,11 @@ def main():
     #file descriptor name passed as paramater
     fd = sys.argv[2]
     blocks = commonlib.splitFile(fd,commonlib.MB)
+    blocks = str(['1','2','3'])
     try:
         if(sys.argv[1] == "-s"):
-            response = stub.Store(master_pb2.StoreRequest(file_name=fd,file_content=blocks),commonlib.TIMEOUT)
-            print(response.reply_msg)
+            print("attempting to store...")
+            response=stub.Store(master_pb2.StoreRequest(file_name=fd,file_content=blocks),commonlib.TIMEOUT)
         else:
             print("Attempting to read... from client")
             response = stub.Read(master_pb2.ReadRequest(file_name="example.txt",timestamp="0",block_size=0),commonlib.TIMEOUT)

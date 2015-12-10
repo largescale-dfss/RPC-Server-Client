@@ -1,9 +1,11 @@
 import os
 from grpc.beta import implementations
 import random
+import data_pb2
+
 #global definitions used throughout program
 MB = 1<<20
-TIMEOUT = 10+10 
+TIMEOUT = 5
 DEBUG = True
 CONFIG = "config.txt" #config file
 
@@ -58,3 +60,23 @@ def loadBalancer(config_file):
         print("List of addresses"+str(ip_addresses))
         print("Best IP: " + str(best_ip))
     return best_ip
+
+def isAlive(ip,port):
+    """Establishes an RPC connection to designated server and checks to
+    see if the server is available. 
+    """
+    #set status flag if server is alive
+    status = False 
+    channel = implementations.insecure_channel(str(ip),int(port))
+    stub = data_pb2.beta_create_DataNode_stub(channel)
+    try:
+        if DEBUG:
+            print("attempting to connect to isAlive..")
+        response = stub.isAlive(data_pb2.AliveRequest(ping=True),commonlib.TIMEOUT)
+        status = True
+        return status
+    except:
+        if DEBUG:
+            print("The server is possibly not alive... Please try again..")
+        return status
+
