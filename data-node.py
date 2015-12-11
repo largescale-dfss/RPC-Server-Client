@@ -5,6 +5,7 @@
 import time
 import commonlib
 import data_pb2
+import dfss
 from grpc.beta import implementations
 import sys 
 class DataNode(data_pb2.BetaDataNodeServicer):
@@ -14,9 +15,11 @@ class DataNode(data_pb2.BetaDataNodeServicer):
         """
         
         reply_msg = "Error has occured, file has not been written"
-     
+        print("Attempting to access DataNode.Store") 
+        #NOTE: Adjust parameters for dfss store operation 
+        dfss.Store()
         
-        return master_pb2.StoreReply(reply_msg=request.file_name)
+        return data_pb2.StoreReply(reply_msg=request.file_name,success=True)
 
     def Read(self,request,context):
         """Reads a file from data node
@@ -34,16 +37,22 @@ class DataNode(data_pb2.BetaDataNodeServicer):
         
         fd = commonlib.splitFile(filename,block_size)
         
-        print("reading file ")
+        
+        if commonlib.DEBUG:
+            print("reading file ")
+        
+        dfss.Read()
+
         return data_pb2.ReadReply(reply_file=fd[0])
     
     def isAlive(self,request,context):
         """This responds with a message indicating the service is alive.
         """    
         msg = "This service is alive"
+        print("Attempting to check if this service isAlive")
         if commonlib.DEBUG:
             print("You are trying to check to see if i'm alive")
-        return data_pb2.AliveReply(health=True,reply_msg=msg) 
+        return data_pb2.AliveReply(health=True) 
 
 def main():
     """Creates Master Node server and listens onto port according to
@@ -55,7 +64,7 @@ def main():
 
     print("\n\tStarting server on localhost:"+port)
     server = data_pb2.beta_create_DataNode_server(DataNode())
-    ip = "localhost:"+str(port)
+    ip = "[::]:"+str(port)
     server.add_insecure_port(ip)
     server.start()
     try:

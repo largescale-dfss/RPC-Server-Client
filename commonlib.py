@@ -57,7 +57,7 @@ def loadBalancer(config_file):
     #best_ip is just a random ip from config_file
     best_ip = ip_addresses[r]
     if DEBUG:
-        print("Best IP: " + str(best_ip))
+        print("Ip selected: " + str(best_ip))
     return best_ip
 
 def isAlive(ip,port):
@@ -70,8 +70,9 @@ def isAlive(ip,port):
     stub = data_pb2.beta_create_DataNode_stub(channel)
     try:
         if DEBUG:
-            print("attempting to connect to isAlive..")
-        response = stub.isAlive(data_pb2.AliveRequest(ping=True),commonlib.TIMEOUT)
+            print("Attempting to make AliveRequest!") 
+        livereq = data_pb2.AliveRequest(ping=True)
+        response = stub.isAlive(livereq,TIMEOUT)
         status = True
         return status
     except:

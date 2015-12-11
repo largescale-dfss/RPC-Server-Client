@@ -32,7 +32,8 @@ def main():
     try:
         if(sys.argv[1] == "-s"):
             print("attempting to store...")
-            response=stub.Store(master_pb2.StoreRequest(file_name=fd,file_content=blocks),commonlib.TIMEOUT)
+            storereq = master_pb2.StoreRequest(file_name="",file_content=blocks,timestamp="",user_id="")
+            response=stub.Store(storereq,commonlib.TIMEOUT)
         else:
             print("Attempting to read... from client")
             response = stub.Read(master_pb2.ReadRequest(file_name="example.txt",timestamp="0",block_size=0),commonlib.TIMEOUT)

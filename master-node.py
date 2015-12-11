@@ -16,13 +16,25 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
         selecting a server at random, then pinging the server to insure
         its working. Afterwards it makes a gRPC call to the data-node to
         perform the Store() operation. 
+        
+        StoreRequest takes the following parameters:
+            1. string file_name
+            2. bytes file_content
+            3. string timestamp
+            4. optional string user_id
+        
+        StoreReply returns the following:
+            1. string reply_msg
+            2. bool success
         """
         
         #prevents infinite loop
         count = 0
         status = False
+
+        # these will be passed as StoreReply
         reply_msg = ""
-        
+        success = False 
          
         if commonlib.DEBUG:
             print("In MasterNode.Store") 
@@ -35,12 +47,14 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
             addr = commonlib.loadBalancer(commonlib.CONFIG).split(":")
             ip = str(addr[0]) #set ip addr
             port = int(addr[1]) #set port number as int
-        
+            
             #Ping Data-node to see if it is working
             status = commonlib.isAlive(ip,port)
+            
             #inform which servers is down. 
             server_msg = "Server %s:%d"%(ip,port)
-            print(server_msg)
+            if commonlib.DEBUG:
+                print(server_msg)
             
             #internal counter to prevent infinite loop
             count = count + 1
@@ -54,13 +68,22 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
             stub = data_pb2.beta_create_DataNode_stub(channel)
             try:
                 #rpc call
-                reply_msg = "File has been written"    
+                if commonlib.DEBUG:
+                    print("Attempting to call DataNode.StoreRequst  MasterNode")
+                req = data_pb2.StoreRequest(file_name="",file_content=['1','b'],timestamp="",user_id="")
+                response = stub.Store(req,commonlib.TIMEOUT)
+                #response = stub.Read(data_pb2.ReadRequest(user_name="",file_name="",timestamp="",block_size=0),commonlib.TIMEOUT)
+                
+                reply_msg = "File has been written" 
+                if commonlib.DEBUG:
+                    print(reply_msg)
+                success=True 
             except:
                 reply_msg = "File has not been written, er -1"
                 
         
         
-        return master_pb2.StoreReply(reply_msg=request.file_name)
+        return master_pb2.StoreReply(reply_msg=reply_msg,success=success)
 
     def Read(self,request,context):
         """Reads a file from data node
