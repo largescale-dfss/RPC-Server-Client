@@ -5,6 +5,7 @@ import commonlib
 import master_pb2
 from grpc.beta import implementations
 import sys
+import time
 DEBUG = False
 def main():
     """Client makes a request to the MasterNode to either store or read
@@ -25,15 +26,20 @@ def main():
     #connection to masternode
     channel = implementations.insecure_channel('localhost',50051)
     stub = master_pb2.beta_create_MasterNode_stub(channel)
+    
     #file descriptor name passed as paramater
-    fd = sys.argv[2]
-    blocks = commonlib.splitFile(fd,commonlib.MB)
-    blocks = str(['1','2','3'])
+    fn = sys.argv[2]
+
+    blocks = commonlib.splitFile(fn,commonlib.MB)
+    blocks = str(blocks) #type cast, bytes[] grpc = string[]
+    ts = str(time.time())
+    
     try:
         if(sys.argv[1] == "-s"):
             print("attempting to store...")
-            storereq = master_pb2.StoreRequest(file_name="",file_content=blocks,timestamp="",user_id="")
-            response=stub.Store(storereq,commonlib.TIMEOUT)
+           
+            req =master_pb2.StoreRequest(file_name=fn,file_content=blocks,timestamp=ts,user_id="")
+            response=stub.Store(req,commonlib.TIMEOUT)
         else:
             print("Attempting to read... from client")
             response = stub.Read(master_pb2.ReadRequest(file_name="example.txt",timestamp="0",block_size=0),commonlib.TIMEOUT)

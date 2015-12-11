@@ -70,7 +70,14 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
                 #rpc call
                 if commonlib.DEBUG:
                     print("Attempting to call DataNode.StoreRequst  MasterNode")
-                req = data_pb2.StoreRequest(file_name="",file_content=['1','b'],timestamp="",user_id="")
+                
+                #parameters being passed to request
+                pfn = request.file_name
+                pfc = request.file_content
+                pts = request.timestamp
+                puid = request.user_id 
+                
+                req = data_pb2.StoreRequest(file_name=pfn,file_content=pfc,timestamp=pts,user_id=puid)
                 response = stub.Store(req,commonlib.TIMEOUT)
                 #response = stub.Read(data_pb2.ReadRequest(user_name="",file_name="",timestamp="",block_size=0),commonlib.TIMEOUT)
                 

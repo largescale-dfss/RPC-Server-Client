@@ -5,7 +5,7 @@ import data_pb2
 
 #global definitions used throughout program
 MB = 1<<20
-TIMEOUT = 5
+TIMEOUT = 10
 DEBUG = True
 CONFIG = "config.txt" #config file
 
