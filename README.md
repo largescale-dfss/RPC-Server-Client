@@ -13,8 +13,10 @@ other is called data-node. You should only run one copy of master-node,
 however you can run as many data-nodes as possible. The master-node runs
 on port 50051 by default. The data-nodes can be ran on any specified
 port, by passing a specific port. Execute the following commands:
-``` python master-node.py
-    python data-node.py [port]
+```
+ python master-node.py
+ python data-node.py [port]
+
 ```
 The next step is updating the config.txt file to let the master-node
 know where exactly is your data-nodes located. For example, if I would
@@ -32,10 +34,14 @@ operations a write operation (or store) and a read operation. Depeneding
 on the operation is what parameters you pass to the program. 
 
 For a read operation do the following:
-``` python client.py -r "file_name" "timestamp"```
+``` 
+    python client.py -r file_name timestamp
+```
 
 For a write operation do the following:
-``` python client.py -s "file_name"```
+``` 
+python client.py -s "file_name"
+```
 
 For more information on the commands supported by the file you can
 execute the following:
