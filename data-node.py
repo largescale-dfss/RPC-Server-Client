@@ -31,7 +31,7 @@ class DataNode(data_pb2.BetaDataNodeServicer):
             return data_pb2.StoreReply(reply_msg="Err -2",success=False)
         
         #NOTE: Adjust parameters for dfss store operation 
-        dfss.Store()
+        dfss.Store(fn,fc,ts,uid)
         
         return data_pb2.StoreReply(reply_msg=request.file_name,success=True)
 
