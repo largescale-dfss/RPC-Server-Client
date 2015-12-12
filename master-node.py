@@ -99,9 +99,9 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
         if commonlib.DEBUG:
             print("Attempting to read file") 
          
-        filename =  request.file_name
-        block_size = request.block_size 
-        
+        fn =  request.file_name
+        ts = request.timestamp
+
         count = 0
         status = False
         reply_msg = ""
@@ -128,22 +128,15 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
             reply_msg = "Error has occured, file cannot be read. Data nodes couldnt be accessed"
         else:
             #NOTE: Update parameters for calls!
-            dfss.Read()
+            fd = dfss.Read(fn,ts)
             reply_msg = "File has been read"
-        
-
-       
-        #if the block_size flag has not been set, set it to the default
-        #1mb
-        if block_size == 0:
-            block_size = commonlib.MB 
-        
-        fd = commonlib.splitFile(filename,block_size)
-        
+           
         if commonlib.DEBUG:        
             print("reading file ")
+            print(fd)
         
-        return master_pb2.ReadReply(reply_file=fd[0])
+        fd = str(fd)
+        return master_pb2.ReadReply(reply_file=fd,success=True)
 
 
 def main():

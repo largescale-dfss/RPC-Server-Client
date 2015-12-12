@@ -28,8 +28,9 @@ def splitFile(fd,block_size):
                 new_block.append(block)
             else:
                 break
-        
-    return new_block
+    
+    nb_bytes = ''.join(new_block) 
+    return nb_bytes
 
 
 def loadBalancer(config_file):

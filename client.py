@@ -42,9 +42,12 @@ def main():
             response=stub.Store(req,commonlib.TIMEOUT)
         else:
             print("Attempting to read... from client")
-            response = stub.Read(master_pb2.ReadRequest(file_name="example.txt",timestamp="0",block_size=0),commonlib.TIMEOUT)
+            req = master_pb2.ReadRequest(file_name=fn,timestamp=ts)
+            response = stub.Read(req,commonlib.TIMEOUT)
+            #response = stub.Read(master_pb2.ReadRequest(file_name="example.txt",timestamp="0",block_size=0),commonlib.TIMEOUT)
             #response=stub.Read(master_pb2.ReadRequest(file_name=sys.argv[2],timestamp=sys.argv[3],block_size=0),commonlib.TIMEOUT)
             #print(response.reply_file)
+            print("File has been successfully read!")
     except:
         print("error occured")
 

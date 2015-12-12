@@ -54,8 +54,15 @@ class DataNode(data_pb2.BetaDataNodeServicer):
         
         if commonlib.DEBUG:
             print("reading file ")
-        
-        dfss.Read()
+       
+        try:
+            if commonlib.DEBUG:
+                print("Attempting to create dfss.Read() req")
+            fn = request.file_name
+            ts = request.timestamp
+        except:  
+            print("Requests are empty") 
+        dfss.Read(fn,ts)
 
         return data_pb2.ReadReply(reply_file=fd[0])
     

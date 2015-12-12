@@ -13,6 +13,12 @@ def Store(file_name,file_content,timestamp,user_id):
     fd.close() 
     return True
 
-def Read():
-    print("This function has yet to be implemented")
-    return False
+def Read(file_name,timestamp):
+    print("Reading in dfss.Read")
+    #note this function doesnt support timestamp yet.
+    fd = open(file_name,"r")
+    lines = fd.readlines()
+    blocks = []
+    for line in lines:
+        blocks.append(line)
+    return blocks 
