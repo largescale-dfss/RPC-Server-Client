@@ -6,7 +6,7 @@ import sys
 
 
 def Store(file_name,file_content,timestamp,user_id):
-    new_file = "%s:%s" % (file_name,timestamp)
+    new_file = "%s@%s" % (file_name,timestamp)
     fd = open(new_file,"w+")
     for i in range(len(file_content)):
         fd.write(file_content[i])
