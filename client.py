@@ -36,18 +36,15 @@ def main():
     
     try:
         if(sys.argv[1] == "-s"):
-            print("attempting to store...")
-           
+            print("attempting to store a file") 
             req =master_pb2.StoreRequest(file_name=fn,file_content=blocks,timestamp=ts,user_id="")
             response=stub.Store(req,commonlib.TIMEOUT)
         else:
-            print("Attempting to read... from client")
+            print("Attempting to read a file")
             req = master_pb2.ReadRequest(file_name=fn,timestamp=ts)
             response = stub.Read(req,commonlib.TIMEOUT)
-            #response = stub.Read(master_pb2.ReadRequest(file_name="example.txt",timestamp="0",block_size=0),commonlib.TIMEOUT)
-            #response=stub.Read(master_pb2.ReadRequest(file_name=sys.argv[2],timestamp=sys.argv[3],block_size=0),commonlib.TIMEOUT)
-            #print(response.reply_file)
             print("File has been successfully read!")
+            print(response.reply_file)
     except:
         print("error occured")
 

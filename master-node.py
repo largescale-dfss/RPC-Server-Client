@@ -59,18 +59,19 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
             #internal counter to prevent infinite loop
             count = count + 1
         
+        #if load balancer cannot find an avaialble data node
+        #return with error message
         if count==5 and status==False:
             reply_msg = "Error has occured, file has not been written"
+            print("Could not load valid ip addr for data node")
+            return master_pb2.StoreReply(reply_msg=reply_msg,success=False) 
+        
         else:
             #Establish a connection to the data node. At this point we
             #know that the data-node is alive. 
             channel = implementations.insecure_channel(str(ip),int(port))
             stub = data_pb2.beta_create_DataNode_stub(channel)
-            try:
-                #rpc call
-                if commonlib.DEBUG:
-                    print("Attempting to call DataNode.StoreRequst  MasterNode")
-                
+            try: 
                 #parameters being passed to request
                 pfn = request.file_name
                 pfc = request.file_content
@@ -84,23 +85,35 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
                 reply_msg = "File has been written" 
                 if commonlib.DEBUG:
                     print(reply_msg)
+                
+                #set success flag
                 success=True 
+
             except:
                 reply_msg = "File has not been written, er -1"
-                
-        
-        
+                        
         return master_pb2.StoreReply(reply_msg=reply_msg,success=success)
 
     def Read(self,request,context):
-        """Reads a file from data node
+        """Reads a file from data node.
+        
+        ReadRequest takes the following parameters:
+            1. string file_name
+            2. string timestamp
+            
+        ReadReply takes the following parameters:
+            1. bytes reply_file
+            2. bool success 
         """
       
         if commonlib.DEBUG:
             print("Attempting to read file") 
-         
-        fn =  request.file_name
-        ts = request.timestamp
+        
+        try: 
+            fn =  request.file_name
+            ts = request.timestamp
+        except:
+            print("Failed to retrieve request params")
 
         count = 0
         status = False
@@ -126,16 +139,13 @@ class MasterNode(master_pb2.BetaMasterNodeServicer):
         
         if count==5 and status==False:
             reply_msg = "Error has occured, file cannot be read. Data nodes couldnt be accessed"
+            return master_pb2.ReadReply(reply_file="",success=False)
         else:
             #NOTE: Update parameters for calls!
             fd = dfss.Read(fn,ts)
             reply_msg = "File has been read"
-           
-        if commonlib.DEBUG:        
-            print("reading file ")
-            print(fd)
-        
-        fd = str(fd)
+            fd = str(fd)
+
         return master_pb2.ReadReply(reply_file=fd,success=True)
 
 
